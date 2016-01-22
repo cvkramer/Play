@@ -1,0 +1,42 @@
+---
+title: "IRT - Problem Set 4"
+author: "Charles Kramer"
+date: "February 9, 2016"
+output: html_document
+---
+
+1. Lord 4-1
+    Compute $P(\theta)$ under the normal ogive model:
+    
+    $P=P(\theta) = c + (1-c)\int_{-\infty}^{a(\theta-b)}\frac{1}{sqrt(2\pi)}e^{-t^2/2}dt$
+        
+    where, $a=1/1.7,b=0,c=.2, \theta = -3, -2, -1, 0, 1, 2, 3$.
+    
+    Compare with results for item 2 in Table 4.17.1 under the logistic model.  
+    
+    Plot the item response function $P(\theta)$ for each item in test1, using the values given in Table 4.17.1.
+    ```{r Lorde4-1}
+        stats <- c(1/1.7,0,.2)
+        stats <- matrix(c(1/1.7,-1,.2,1/1.7,0,.2,1/1.7,1,.2), ncol = 3, byrow=T)
+        calc.P.Theta = function(stats,thetas=seq(-3,3,1)) {
+            a <- stats[1]; b <- stats[2]; c <- stats[3];
+            t <- a * (thetas-b)
+            list( P.Thetas = c + (1-c) / (1 + exp(-1.7*t)), Scale=thetas ) }
+        l1 = calc.P.Theta(stats[,1])
+        l2 = calc.P.Theta(stats[,2])
+        l3 = calc.P.Theta(stats[,3])
+        plot(NULL, xlim=c(-3,3), ylim=c(0,1), 
+             main = "Lorde 4-1",
+             xlab = expression(theta), ylab = expression(paste("P(",theta,")")))
+        lines(l1$Scale,l1$P.Thetas)
+        lines(l2$Scale,l2$P.Thetas)
+        lines(l3$Scale,l3$P.Thetas)
+    ```
+    
+2. Lorde 4-2
+```{R Lorde4-2}
+lw <- function(p=runif(runif(1,1,10),0,1),px=c(1),fx=p){
+    if(length(p)==0){return(list(p=fx,px=px,x=seq(0,length(fx),1)))}
+    lw(p[-1],c((1-p[1])*px,0)+c(0,p[1]*px),fx)
+}
+lw()
